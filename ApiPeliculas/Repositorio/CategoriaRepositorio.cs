@@ -41,7 +41,7 @@ namespace ApiPeliculas.Repositorio
 
         public bool ExisteCategoria(int id)
         {
-            return _bd.Categoria.Any(c =>> c.Id == id);
+            return _bd.Categoria.Any(c => c.Id == id);
         }
 
         public Categoria GetCategoria(int categoriaId)
