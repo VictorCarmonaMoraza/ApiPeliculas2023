@@ -39,24 +39,24 @@ namespace ApiPeliculas.Repositorio
             return valor;
         }
 
-        public bool ExisteCategoria(int id)
-        {
-            return _bd.Categoria.Any(c => c.Id == id);
-        }
+        public bool ExisteCategoria(int id)=> _bd.Categoria.Any(c => c.Id == id);
+        //{
+        //    return _bd.Categoria.Any(c => c.Id == id);
+        //}
 
-        public Categoria GetCategoria(int categoriaId)
-        {
-            return _bd.Categoria.FirstOrDefault(c => c.Id == categoriaId);
-        }
+        public Categoria GetCategoria(int categoriaId)=> _bd.Categoria.FirstOrDefault(c => c.Id == categoriaId);
+        //{
+        //    return _bd.Categoria.FirstOrDefault(c => c.Id == categoriaId);
+        //}
 
-        public ICollection<Categoria> GetCategorias()
-        {
-            return _bd.Categoria.OrderBy(c => c.Nombre).ToList();
-        }
+        public ICollection<Categoria> GetCategorias()=> _bd.Categoria.OrderBy(c => c.Nombre).ToList();
+        //{
+        //    return _bd.Categoria.OrderBy(c => c.Nombre).ToList();
+        //}
 
-        public bool Guardar()
-        {
-            return _bd.SaveChanges() >= 0 ? true : false;
-        }
+        public bool Guardar()=> _bd.SaveChanges() >= 0 ? true : false;
+        //{
+        //    return _bd.SaveChanges() >= 0 ? true : false;
+        //}
     }
 }
