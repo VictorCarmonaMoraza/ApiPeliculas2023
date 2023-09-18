@@ -3,7 +3,6 @@ using ApiPeliculas.Modelos.Dtos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.WebSockets;
 
 namespace ApiPeliculas.Controllers
 {
@@ -47,6 +46,36 @@ namespace ApiPeliculas.Controllers
             return Ok(listaCategoriaDto);
         }
 
+        /// <summary>
+        /// Obtener cattegoria por su id
+        /// </summary>
+        /// <param name="categoriaId">Id de la categoria</param>
+        /// <returns></returns>
+        [HttpGet("{categoriaId:int}", Name = "GetCategoria")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetCategoria(int categoriaId)
+        {
+        //Forma 1
+            Categoria itemCategoria = _ctRepo.GetCategoria(categoriaId);
+            //Forma 2
+            var itemCategorias2 = _ctRepo.GetCategoria(categoriaId);
 
+            //Validamos si la categoria existe
+            if (itemCategoria == null)
+            {
+                //Retorna un 400
+                return NotFound();
+            }
+
+            //MApeamos
+            var itemCategoriaDto = _mapper.Map<CategoriaDto>(itemCategoria);
+
+            return Ok(itemCategoriaDto);
+        }
     }
 }
+
+
