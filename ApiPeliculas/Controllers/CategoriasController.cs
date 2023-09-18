@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApiPeliculas.Modelos;
+using ApiPeliculas.Modelos.Dtos;
+using ApiPeliculas.Repositorio.IRepositorio;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.WebSockets;
 
 namespace ApiPeliculas.Controllers
 {
@@ -8,9 +13,40 @@ namespace ApiPeliculas.Controllers
     [Route("api/categoria")]
     public class CategoriasController : ControllerBase
     {
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+
+        private readonly ICategoriaRepositorio _ctRepo;
+        private readonly IMapper _mapper;
+
+        //Constructor
+        public CategoriasController(ICategoriaRepositorio ctRepo, IMapper mapper)
+        {
+            _ctRepo = ctRepo;
+            _mapper = mapper;
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetCategorias()
+        {
+            //Forma 1
+            IEnumerable<Categoria> listaCategorias = _ctRepo.GetCategorias().ToList();
+            //Forma 2
+            var listaCategorias2 = _ctRepo.GetCategorias().ToList();
+
+            //Forma 3
+            var listaCategorias3 = from pelicula in _ctRepo.GetCategorias() select pelicula;
+
+            //
+            var listaCategoriaDto = new List<CategoriaDto>();
+
+            foreach (var item in listaCategorias)
+            {
+                listaCategoriaDto.Add(_mapper.Map<CategoriaDto>(item));
+            }
+            return Ok(listaCategoriaDto);
+        }
+
+
     }
 }
