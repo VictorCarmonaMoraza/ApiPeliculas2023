@@ -123,6 +123,42 @@ namespace ApiPeliculas.Controllers
 
         #endregion POST
 
+        #region PATCH
+
+        [HttpPatch("{categoriaId:int}",Name = "ActualizarCategoria")]
+        [ProducesResponseType(201, Type = typeof(CategoriaDto))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ActualizarCategoria(int categoriaId, [FromBody] CategoriaDto categoriaDto)
+        {
+            //Validamos el modelo, si el modelo no es valido
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Validamos si el modelo viene vacio
+            if (categoriaDto == null || categoriaId !=categoriaDto.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Obtenemos la categoria
+            var categoria = _mapper.Map<Categoria>(categoriaDto);
+
+            //SIno podemos crear la categoria
+            if (!_ctRepo.ActualizarCategoria(categoria))
+            {
+                ModelState.AddModelError("", $"Algo salio mal actualizando el registro, guardando el registro{categoria.Nombre}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        #endregion PaTCH
+
     }
 }
 
