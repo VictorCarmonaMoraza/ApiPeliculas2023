@@ -23,6 +23,8 @@ namespace ApiPeliculas.Controllers
             _mapper = mapper;
         }
 
+        #region GET
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -75,6 +77,52 @@ namespace ApiPeliculas.Controllers
 
             return Ok(itemCategoriaDto);
         }
+
+        #endregion GET
+
+        #region POST
+
+        [HttpPost]
+        [ProducesResponseType(201,Type =typeof(CategoriaDto))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult CrearCategoria([FromBody] CrearCategoriaDto crearCategoriaDto)
+        {
+            //Validamos el modelo, si el modelo no es valido
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Validamos si el modelo viene vacio
+            if (crearCategoriaDto == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Si existe una categoria con el mismo nombre, no nos debe dejar crear una categoria
+            if (_ctRepo.ExisteCategoria(crearCategoriaDto.Nombre))
+            {
+                ModelState.AddModelError("", "La categoria ya existe");
+                return StatusCode(404, ModelState);
+            }
+
+            var categoria = _mapper.Map<Categoria>(crearCategoriaDto);
+
+            //SIno podemos crear la categoria
+            if (!_ctRepo.CrearCategoria(categoria))
+            {
+                ModelState.AddModelError("", $"Algo salio mal, guardando el registro{categoria.Nombre}");
+                return StatusCode(500, ModelState);
+            }
+
+            return CreatedAtRoute("GetCategoria", new {categoriaId= categoria.Id}, categoria);
+
+        }
+
+        #endregion POST
+
     }
 }
 
