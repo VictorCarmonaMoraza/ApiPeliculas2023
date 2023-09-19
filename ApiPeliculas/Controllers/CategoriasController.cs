@@ -60,7 +60,7 @@ namespace ApiPeliculas.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetCategoria(int categoriaId)
         {
-        //Forma 1
+            //Forma 1
             Categoria itemCategoria = _ctRepo.GetCategoria(categoriaId);
             //Forma 2
             var itemCategorias2 = _ctRepo.GetCategoria(categoriaId);
@@ -83,7 +83,7 @@ namespace ApiPeliculas.Controllers
         #region POST
 
         [HttpPost]
-        [ProducesResponseType(201,Type =typeof(CategoriaDto))]
+        [ProducesResponseType(201, Type = typeof(CategoriaDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -117,7 +117,7 @@ namespace ApiPeliculas.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return CreatedAtRoute("GetCategoria", new {categoriaId= categoria.Id}, categoria);
+            return CreatedAtRoute("GetCategoria", new { categoriaId = categoria.Id }, categoria);
 
         }
 
@@ -125,7 +125,7 @@ namespace ApiPeliculas.Controllers
 
         #region PATCH
 
-        [HttpPatch("{categoriaId:int}",Name = "ActualizarCategoria")]
+        [HttpPatch("{categoriaId:int}", Name = "ActualizarCategoria")]
         [ProducesResponseType(201, Type = typeof(CategoriaDto))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -139,7 +139,7 @@ namespace ApiPeliculas.Controllers
             }
 
             //Validamos si el modelo viene vacio
-            if (categoriaDto == null || categoriaId !=categoriaDto.Id)
+            if (categoriaDto == null || categoriaId != categoriaDto.Id)
             {
                 return BadRequest(ModelState);
             }
@@ -157,7 +157,35 @@ namespace ApiPeliculas.Controllers
             return NoContent();
         }
 
-        #endregion PaTCH
+        #endregion PATCH
+
+        #region DELETE
+        [HttpDelete("{categoriaId:int}", Name = "DeleteCategoria")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public IActionResult DeleteCategoria(int categoriaId)
+        {
+
+            //Validamos si existe la categoria. Si no existe la categoria devolvemos NotFound
+            if (!_ctRepo.ExisteCategoria(categoriaId)) return BadRequest($"No existe la cattegoria que buscas con id {categoriaId}");
+
+            //Obtenemos la categoria por su id
+            var categoria = _ctRepo.GetCategoria(categoriaId);
+
+            //SIno podemos crear la categoria
+            if (!_ctRepo.BorrarCategoria(categoria))
+            {
+                ModelState.AddModelError("", $"Algo salio mal eliminando el registro, guardando el registro{categoria.Nombre}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        #endregion DELETE
 
     }
 }
