@@ -11,5 +11,12 @@ namespace ApiPeliculas.Modelos
         public string Nombre { get; set; }
 
         public DateTime FechaCreacion { get; set; }
+
+
+        //public int Id
+        //{
+        //    get { return IdCategoria; }
+        //    set { IdCategoria = value; }
+        //}
     }
 }
