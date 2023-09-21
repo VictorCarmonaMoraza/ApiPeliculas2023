@@ -11,16 +11,21 @@ namespace ApiPeliculas.Controllers
     [ApiController]
     public class PeliculasController : ControllerBase
     {
+        #region campos
         private readonly IPeliculaRepositorio _pelRepo;
         private readonly IMapper _mapper;
+        #endregion campos
 
+        #region constructor
         //Constructor
         public PeliculasController(IPeliculaRepositorio pelRepo, IMapper mapper)
         {
             _pelRepo = pelRepo;
             _mapper = mapper;
         }
+        #endregion constructor
 
+        #region GET
         /// <summary>
         /// Obtenemos listado de peliculas
         /// </summary>
@@ -67,5 +72,53 @@ namespace ApiPeliculas.Controllers
             //devolvemos la pelicula
             return Ok(itemPeliculaDto);
         }
+        #endregion GET
+
+        #region POST
+        /// <summary>
+        /// Creacion de una pelicula
+        /// </summary>
+        /// <param name="peliculaDto">modelo pelicula</param>
+        /// <returns></returns>
+        [HttpPost]
+        [ProducesResponseType(201, Type = typeof(PeliculaDto))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult CrearPelicula([FromBody] PeliculaDto peliculaDto)
+        {
+            //Validamos el modelo, si el modelo no es valido
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Validamos si el modelo viene vacio
+            if (peliculaDto == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Si existe una categoria con el mismo nombre, no nos debe dejar crear una categoria
+            if (_pelRepo.ExistePelicula(peliculaDto.Nombre))
+            {
+                ModelState.AddModelError("", "La pelicula ya existe");
+                return StatusCode(404, ModelState);
+            }
+
+            var pelicula = _mapper.Map<Pelicula>(peliculaDto);
+
+            //SIno podemos crear la categoria
+            if (!_pelRepo.CrearPelicula(pelicula))
+            {
+                ModelState.AddModelError("", $"Algo salio mal, guardando el registro{pelicula.Nombre}");
+                return StatusCode(500, ModelState);
+            }
+
+            return CreatedAtRoute("GetPelicula", new { peliculaId = pelicula.Id }, pelicula);
+
+        }
+
+        #endregion POST
     }
 }
