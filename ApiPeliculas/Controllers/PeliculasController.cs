@@ -120,5 +120,46 @@ namespace ApiPeliculas.Controllers
         }
 
         #endregion POST
+
+        #region PATCH
+        /// <summary>
+        /// Actualiza una pelicula
+        /// </summary>
+        /// <param name="peliculaId"></param>
+        /// <param name="peliculaDto"></param>
+        /// <returns></returns>
+        [HttpPatch("{peliculaId:int}", Name = "ActualizarPelicula")]
+        [ProducesResponseType(201, Type = typeof(CategoriaDto))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ActualizarPelicula(int peliculaId, [FromBody] PeliculaDto peliculaDto)
+        {
+            //Validamos el modelo, si el modelo no es valido
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Validamos si el modelo viene vacio
+            if (peliculaDto == null || peliculaId != peliculaDto.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Obtenemos la categoria
+            var pelicula = _mapper.Map<Pelicula>(peliculaDto);
+
+            //SIno podemos crear la categoria
+            if (!_pelRepo.ActualizarPelicula(pelicula))
+            {
+                ModelState.AddModelError("", $"Algo salio mal actualizando el registro, guardando el registro{pelicula.Nombre}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        #endregion PATCH
     }
 }
