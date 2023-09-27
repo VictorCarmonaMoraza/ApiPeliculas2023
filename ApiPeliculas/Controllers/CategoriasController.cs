@@ -160,6 +160,11 @@ namespace ApiPeliculas.Controllers
         #endregion PATCH
 
         #region DELETE
+        /// <summary>
+        /// Elimina una categoria por su id
+        /// </summary>
+        /// <param name="categoriaId">id de la categoria</param>
+        /// <returns></returns>
         [HttpDelete("{categoriaId:int}", Name = "DeleteCategoria")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

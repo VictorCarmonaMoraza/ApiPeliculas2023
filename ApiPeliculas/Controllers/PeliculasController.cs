@@ -2,11 +2,12 @@
 using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace ApiPeliculas.Controllers
 {
+
     [Route("api/peliculas")]
     [ApiController]
     public class PeliculasController : ControllerBase
@@ -30,6 +31,7 @@ namespace ApiPeliculas.Controllers
         /// Obtenemos listado de peliculas
         /// </summary>
         /// <returns></returns>
+        
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -161,5 +163,35 @@ namespace ApiPeliculas.Controllers
         }
 
         #endregion PATCH
+
+        #region DELETE
+
+        [HttpDelete("{peliculaId:int}", Name = "BorrarPelicula")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        //// [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult BorrarPelicula(int peliculaId)
+        {
+            //Si no existe la pelicula
+            if (!_pelRepo.ExistePelicula(peliculaId))
+            {
+                return BadRequest($"No encontramos la pelicula para el id: {peliculaId}");
+            }
+
+            var pelicula = _pelRepo.GetPelicula(peliculaId);
+
+            //Borramos la pelicula
+            if (!_pelRepo.BorrarPelicula(pelicula))
+            {
+                ModelState.AddModelError("", $"Algo salio mal borrando la pelicula {pelicula.Nombre}");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
+
+        #endregion DELETE
     }
 }
