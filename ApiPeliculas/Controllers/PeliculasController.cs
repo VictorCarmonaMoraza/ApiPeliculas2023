@@ -31,14 +31,14 @@ namespace ApiPeliculas.Controllers
         /// Obtenemos listado de peliculas
         /// </summary>
         /// <returns></returns>
-        
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetPeliculass()
         {
             IEnumerable<Pelicula> listaPeliculas = _pelRepo.GetPeliculas().ToList();
-         
+
             var listaPeliculaDto = new List<PeliculaDto>();
 
             foreach (var item in listaPeliculas)
@@ -76,6 +76,11 @@ namespace ApiPeliculas.Controllers
         }
 
 
+        /// <summary>
+        /// Obtener peliculas dentro de una categoria
+        /// </summary>
+        /// <param name="categoriaId">id categoria</param>
+        /// <returns>Lista de peliculas dentro de la categoria</returns>
         [HttpGet("GetPeliculasEnCategoria/{categoriaId:int}")]
         public IActionResult GetPeliculasEnCategoria(int categoriaId)
         {
@@ -83,17 +88,42 @@ namespace ApiPeliculas.Controllers
 
             if (listaPeliculas == null)
             {
-                return  BadRequest($"No encontramos ninguna pelicula para el id: {categoriaId}");
+                return BadRequest($"No encontramos ninguna pelicula para el id: {categoriaId}");
             }
-             
+
             var itemPelicula = new List<PeliculaDto>();
 
-            foreach ( var item in listaPeliculas)
+            foreach (var item in listaPeliculas)
             {
                 itemPelicula.Add(_mapper.Map<PeliculaDto>(item));
             }
             return Ok(itemPelicula);
-            
+
+        }
+
+       /// <summary>
+       /// Buscar una pelicula por su nombre
+       /// </summary>
+       /// <param name="nombre">nombre de la pelicula</param>
+       /// <returns>pelicula encontrada</returns>
+        [HttpGet("Buscar")]
+        public IActionResult Buscar(string nombre)
+        {
+
+            try
+            {
+                var resultado = _pelRepo.BuscarPelicula(nombre.Trim());
+                if (resultado.Any())
+                {
+                    return Ok(resultado);
+                }
+                return NotFound();
+            }
+            catch (Exception)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error recuperando datos");
+            }
         }
         #endregion GET
 
