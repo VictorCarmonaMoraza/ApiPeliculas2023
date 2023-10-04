@@ -1,4 +1,5 @@
 ﻿using ApiPeliculas.Data;
+using ApiPeliculas.Helpers;
 using ApiPeliculas.Modelos;
 using ApiPeliculas.Modelos.Dtos.UsuarioDTO;
 using ApiPeliculas.Repositorio.IRepositorio;
@@ -60,9 +61,28 @@ namespace ApiPeliculas.Repositorio
             return false;
         }
 
-        public Task<Usuario> Registro(UsuarioRegistroDto usuarioRegistroDto)
+        /// <summary>
+        /// Registramos un Usuario
+        /// </summary>
+        /// <param name="usuarioRegistroDto"></param>
+        /// <returns></returns>
+        public async Task<Usuario> Registro(UsuarioRegistroDto usuarioRegistroDto)
         {
-            throw new NotImplementedException();
+            var passwwordEncriptada = EncriptarPassword.obtenermd5(usuarioRegistroDto.Password);
+
+            Usuario usuario = new Usuario()
+            {
+                NombreUsuario = usuarioRegistroDto.NombreUsuario,
+                Password = passwwordEncriptada,
+                Nombre = usuarioRegistroDto.Nombre,
+                Role = usuarioRegistroDto.Role,
+            };
+
+            //Guardado en BBDD
+            _bd.Usuarios.Add(usuario);
+            await _bd.SaveChangesAsync();
+            usuario.Password = passwwordEncriptada;
+            return usuario;
         }
 
         public Task<UsuarioLoginRespuestaDto> Login(UsuarioLoginDto usuarioLoginDto)
