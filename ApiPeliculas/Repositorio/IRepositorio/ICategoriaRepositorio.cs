@@ -2,6 +2,9 @@
 
 namespace ApiPeliculas.Repositorio.IRepositorio
 {
+    /// <summary>
+    /// Interfza de Categoria
+    /// </summary>
     public interface ICategoriaRepositorio
     {
         ICollection<Categoria> GetCategorias();

@@ -2,6 +2,9 @@
 
 namespace ApiPeliculas.Repositorio.IRepositorio
 {
+    /// <summary>
+    /// Interfza de Pelicula
+    /// </summary>
     public interface IPeliculaRepositorio
     {
         ICollection<Pelicula> GetPeliculas();
