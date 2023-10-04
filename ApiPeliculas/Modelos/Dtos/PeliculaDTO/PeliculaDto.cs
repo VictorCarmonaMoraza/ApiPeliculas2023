@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ApiPeliculas.Modelos.Dtos
+namespace ApiPeliculas.Modelos.Dtos.PeliculaDTO
 {
     public class PeliculaDto
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage="El nombre de la pelicula es obligatorio")]
+        [Required(ErrorMessage = "El nombre de la pelicula es obligatorio")]
         public string Nombre { get; set; }
         public string RutaImagen { get; set; }
 

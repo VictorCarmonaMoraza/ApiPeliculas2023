@@ -1,9 +1,9 @@
-﻿using ApiPeliculas.Modelos.Dtos;
-using ApiPeliculas.Modelos;
+﻿using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-
+using ApiPeliculas.Modelos.Dtos.CategoriaDTO;
+using ApiPeliculas.Modelos.Dtos.PeliculaDTO;
 
 namespace ApiPeliculas.Controllers
 {

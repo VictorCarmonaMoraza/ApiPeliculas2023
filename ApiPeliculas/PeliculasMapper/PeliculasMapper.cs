@@ -1,5 +1,6 @@
 ﻿using ApiPeliculas.Modelos;
-using ApiPeliculas.Modelos.Dtos;
+using ApiPeliculas.Modelos.Dtos.CategoriaDTO;
+using ApiPeliculas.Modelos.Dtos.PeliculaDTO;
 using AutoMapper;
 
 namespace ApiPeliculas.PeliculasMapper
