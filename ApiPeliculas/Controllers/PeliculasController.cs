@@ -74,6 +74,27 @@ namespace ApiPeliculas.Controllers
             //devolvemos la pelicula
             return Ok(itemPeliculaDto);
         }
+
+
+        [HttpGet("GetPeliculasEnCategoria/{categoriaId:int}")]
+        public IActionResult GetPeliculasEnCategoria(int categoriaId)
+        {
+            var listaPeliculas = _pelRepo.GetPeliculasEnCategoria(categoriaId);
+
+            if (listaPeliculas == null)
+            {
+                return  BadRequest($"No encontramos ninguna pelicula para el id: {categoriaId}");
+            }
+             
+            var itemPelicula = new List<PeliculaDto>();
+
+            foreach ( var item in listaPeliculas)
+            {
+                itemPelicula.Add(_mapper.Map<PeliculaDto>(item));
+            }
+            return Ok(itemPelicula);
+            
+        }
         #endregion GET
 
         #region POST
