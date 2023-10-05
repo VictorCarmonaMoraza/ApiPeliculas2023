@@ -27,6 +27,11 @@ namespace ApiPeliculas.Controllers
             _mapper = mapper;
         }
 
+        #region GET
+        /// <summary>
+        /// Obtiene la lista de usuarios
+        /// </summary>
+        /// <returns>lista de usuarios</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -49,5 +54,33 @@ namespace ApiPeliculas.Controllers
             return Ok(listaUsuariosDto);
         }
 
+        /// <summary>
+        /// Obtiene un usuario por su id
+        /// </summary>
+        /// <param name="usuarioId">id del usuario</param>
+        /// <returns>usuario</returns>
+        [HttpGet("{usuarioId:int}", Name = "GetUsuario")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetUsuario(int usuarioId)
+        {
+            Usuario itemUsuario = _usRepo.GetUsuario(usuarioId);
+
+            //Validamos si el usuaerio exisate
+            if (itemUsuario == null)
+            {
+                //Retorna un 400
+                return NotFound();
+            }
+
+            //MApeamos
+            var itemUsuarioiaDto = _mapper.Map<UsuarioDto>(itemUsuario);
+
+            return Ok(itemUsuarioiaDto);
+        }
+
+        #endregion GET
     }
 }
