@@ -1,8 +1,12 @@
 ﻿using ApiPeliculas.Data;
+using ApiPeliculas.DTOS.UsuarioDTO;
 using ApiPeliculas.Helpers;
 using ApiPeliculas.Modelos;
-using ApiPeliculas.Modelos.Dtos.UsuarioDTO;
 using ApiPeliculas.Repositorio.IRepositorio;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ApiPeliculas.Repositorio
 {
@@ -13,14 +17,16 @@ namespace ApiPeliculas.Repositorio
     {
 
         private readonly ApplicationDbContext _bd;
+        private string claveSecreta;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="bd"></param>
-        public UsuarioRepositorio(ApplicationDbContext bd)
+        public UsuarioRepositorio(ApplicationDbContext bd, IConfiguration config)
         {
             _bd = bd;
+            claveSecreta = config.GetValue<string>("ApiSettings:Secreta");
         }
 
         /// <summary>
@@ -85,9 +91,53 @@ namespace ApiPeliculas.Repositorio
             return usuario;
         }
 
-        public Task<UsuarioLoginRespuestaDto> Login(UsuarioLoginDto usuarioLoginDto)
+        /// <summary>
+        /// Login mediante token para el Usuario
+        /// </summary>
+        /// <param name="usuarioLoginDto"></param>
+        /// <returns></returns>
+        public async Task<UsuarioLoginRespuestaDto> Login(UsuarioLoginDto usuarioLoginDto)
         {
-            throw new NotImplementedException();
+            var passwordEncriptado = EncriptarPassword.obtenermd5(usuarioLoginDto.Password);
+
+            //Validamos soi el usuario no existe xcon la combinacion de usuario y contraseña correcta
+            var usuario = _bd.Usuarios.FirstOrDefault(
+                u=>u.NombreUsuario.ToLower() == usuarioLoginDto.NombreUsuario.ToLower()
+                && u.Password==passwordEncriptado);
+
+            //validamos si el usaurio es nulo
+            if(usuario == null)
+            {
+                return new UsuarioLoginRespuestaDto()
+                {
+                    Token = "",
+                    Usuario = null
+                };
+            }
+
+            //Aqui existe el usaurio entonces podemos procesar el login
+            var manejadorToken = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(claveSecreta);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, usuario.NombreUsuario.ToString()),
+                    new Claim(ClaimTypes.Role, usuario.Role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = manejadorToken.CreateToken(tokenDescriptor);
+
+            UsuarioLoginRespuestaDto usuarioLoginRespuestaDto = new UsuarioLoginRespuestaDto()
+            {
+                Token = manejadorToken.WriteToken(token),
+                Usuario = usuario
+            };
+            return usuarioLoginRespuestaDto;
         }
     }
 }

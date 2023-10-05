@@ -1,4 +1,4 @@
-﻿namespace ApiPeliculas.Modelos.Dtos.UsuarioDTO
+﻿namespace ApiPeliculas.DTOS.UsuarioDTO
 {
     /// <summary>
     /// DTO para el Usuario

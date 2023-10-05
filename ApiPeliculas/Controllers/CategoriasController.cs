@@ -1,5 +1,5 @@
-﻿using ApiPeliculas.Modelos;
-using ApiPeliculas.Modelos.Dtos.CategoriaDTO;
+﻿using ApiPeliculas.DTOS.CategoriaDTO;
+using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;

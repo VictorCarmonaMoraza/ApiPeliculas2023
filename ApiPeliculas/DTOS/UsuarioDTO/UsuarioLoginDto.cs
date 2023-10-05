@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ApiPeliculas.Modelos.Dtos.UsuarioDTO
+namespace ApiPeliculas.DTOS.UsuarioDTO
 {
     /// <summary>
     /// DTO de Usuario Login
@@ -8,9 +8,9 @@ namespace ApiPeliculas.Modelos.Dtos.UsuarioDTO
     public class UsuarioLoginDto
     {
         [Required(ErrorMessage = "El usuario es obligatorio")]
-        public string NombreUsuario {  get; set; }
+        public string NombreUsuario { get; set; }
 
-        [Required(ErrorMessage ="El password es obligatorio")]
+        [Required(ErrorMessage = "El password es obligatorio")]
         public string Password { get; set; }
     }
 }

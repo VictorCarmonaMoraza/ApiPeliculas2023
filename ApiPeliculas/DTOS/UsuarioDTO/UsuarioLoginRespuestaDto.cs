@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ApiPeliculas.Modelos;
 
-namespace ApiPeliculas.Modelos.Dtos.UsuarioDTO
+namespace ApiPeliculas.DTOS.UsuarioDTO
 {
     /// <summary>
     /// Modelo de Usuario para cuando nos autentificamos correctamente

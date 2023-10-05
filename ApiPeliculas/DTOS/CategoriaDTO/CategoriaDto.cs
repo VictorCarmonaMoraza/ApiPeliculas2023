@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ApiPeliculas.Modelos.Dtos.CategoriaDTO
+namespace ApiPeliculas.DTOS.CategoriaDTO
 {
     public class CategoriaDto
     {

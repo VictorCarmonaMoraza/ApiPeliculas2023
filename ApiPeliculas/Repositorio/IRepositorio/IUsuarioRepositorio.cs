@@ -1,5 +1,5 @@
-﻿using ApiPeliculas.Modelos;
-using ApiPeliculas.Modelos.Dtos.UsuarioDTO;
+﻿using ApiPeliculas.DTOS.UsuarioDTO;
+using ApiPeliculas.Modelos;
 
 namespace ApiPeliculas.Repositorio.IRepositorio
 {

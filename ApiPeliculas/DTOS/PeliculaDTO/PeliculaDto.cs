@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ApiPeliculas.Modelos.Dtos.PeliculaDTO
+namespace ApiPeliculas.DTOS.PeliculaDTO
 {
     public class PeliculaDto
     {
