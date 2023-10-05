@@ -51,7 +51,7 @@ namespace ApiPeliculas.Repositorio
         }
 
         /// <summary>
-        /// Comporbar si el usaurio es unico
+        /// Comprobar si el usaurio es unico
         /// </summary>
         /// <param name="usuario"></param>
         /// <returns></returns>
