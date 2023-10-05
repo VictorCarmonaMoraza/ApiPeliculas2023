@@ -5,6 +5,9 @@ using AutoMapper;
 
 namespace ApiPeliculas.PeliculasMapper
 {
+    /// <summary>
+    /// Mapeoo de ^Pelicula
+    /// </summary>
     public class PeliculasMapper : Profile
     {
         public PeliculasMapper()

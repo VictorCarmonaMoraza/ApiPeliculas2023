@@ -4,6 +4,7 @@ using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace ApiPeliculas.Controllers
 {
@@ -14,6 +15,7 @@ namespace ApiPeliculas.Controllers
 
         private readonly IUsuarioRepositorio _usRepo;
         private readonly IMapper _mapper;
+        protected RespuestaAPI _respuestaAPI;
 
 
         /// <summary>
@@ -24,6 +26,7 @@ namespace ApiPeliculas.Controllers
         public UsuariosController(IUsuarioRepositorio usRepo, IMapper mapper)
         {
             _usRepo = usRepo;
+            this._respuestaAPI = new();
             _mapper = mapper;
         }
 
@@ -82,5 +85,48 @@ namespace ApiPeliculas.Controllers
         }
 
         #endregion GET
+
+        #region POST
+        /// <summary>
+        /// Registro de Usuario
+        /// </summary>
+        /// <param name="usuarioRegistroDto">usuario a registrar</param>
+        /// <returns></returns>
+        [HttpPost("registro")]
+        [ProducesResponseType(201, Type = typeof(UsuarioDto))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Registro([FromBody] UsuarioRegistroDto usuarioRegistroDto)
+        {
+            //Validamos si el ususario es unico
+            bool nombreUsuarioEsUnico = _usRepo.IsUniqueUser(usuarioRegistroDto.NombreUsuario);
+
+            //Si el usuario ya existe
+            if (!nombreUsuarioEsUnico)
+            {
+                _respuestaAPI.StatusCode = HttpStatusCode.BadRequest;
+                _respuestaAPI.IsSuccess = false;
+                _respuestaAPI.ErrorMessages.Add("El nombre del usuario ya existe");
+                return BadRequest(_respuestaAPI);
+            }
+
+            //Creamos usuario
+            var usuario = await _usRepo.Registro(usuarioRegistroDto);
+
+            if (usuario == null)
+            {
+                _respuestaAPI.StatusCode = HttpStatusCode.BadRequest;
+                _respuestaAPI.IsSuccess = false;
+                _respuestaAPI.ErrorMessages.Add("Error en el registro");
+                return BadRequest(_respuestaAPI);
+            }
+
+            _respuestaAPI.StatusCode = HttpStatusCode.OK;
+            _respuestaAPI.IsSuccess = true;
+            return Ok(_respuestaAPI);
+        }
+
+        #endregion POST
     }
 }
