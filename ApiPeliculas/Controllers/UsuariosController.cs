@@ -3,6 +3,7 @@ using ApiPeliculas.DTOS.UsuarioDTO;
 using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -35,7 +36,9 @@ namespace ApiPeliculas.Controllers
         /// Obtiene la lista de usuarios
         /// </summary>
         /// <returns>lista de usuarios</returns>
+        [Authorize(Roles ="admin")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetUsuarios()
@@ -62,10 +65,12 @@ namespace ApiPeliculas.Controllers
         /// </summary>
         /// <param name="usuarioId">id del usuario</param>
         /// <returns>usuario</returns>
+        [Authorize(Roles = "admin")]
         [HttpGet("{usuarioId:int}", Name = "GetUsuario")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUsuario(int usuarioId)
         {
@@ -92,6 +97,7 @@ namespace ApiPeliculas.Controllers
         /// </summary>
         /// <param name="usuarioRegistroDto">usuario a registrar</param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost("registro")]
         [ProducesResponseType(201, Type = typeof(UsuarioDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -132,6 +138,7 @@ namespace ApiPeliculas.Controllers
         /// </summary>
         /// <param name="usuarioLoginDto">usuario login</param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(201, Type = typeof(UsuarioDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]

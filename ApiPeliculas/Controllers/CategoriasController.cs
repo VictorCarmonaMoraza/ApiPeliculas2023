@@ -2,10 +2,12 @@
 using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiPeliculas.Controllers
 {
+    //[Authorize(Roles ="admin")]
     [ApiController]
     //Opcion 1 => [Route("api/[controller]")]
     //Opcion 2 =>[Route("api/categoria")] =>esta es mejor porque si cambia el nombre del controlador seguira funcionando
@@ -24,7 +26,11 @@ namespace ApiPeliculas.Controllers
         }
 
         #region GET
-
+        /// <summary>
+        /// Obtener todas las categorias
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,6 +59,7 @@ namespace ApiPeliculas.Controllers
         /// </summary>
         /// <param name="categoriaId">Id de la categoria</param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpGet("{categoriaId:int}", Name = "GetCategoria")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -82,10 +89,12 @@ namespace ApiPeliculas.Controllers
 
         #region POST
 
+        [Authorize(Roles ="admin")]
         [HttpPost]
         [ProducesResponseType(201, Type = typeof(CategoriaDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CrearCategoria([FromBody] CrearCategoriaDto crearCategoriaDto)
         {
@@ -124,11 +133,12 @@ namespace ApiPeliculas.Controllers
         #endregion POST
 
         #region PATCH
-
+        [Authorize(Roles = "admin")]
         [HttpPatch("{categoriaId:int}", Name = "ActualizarCategoria")]
         [ProducesResponseType(201, Type = typeof(CategoriaDto))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult ActualizarCategoria(int categoriaId, [FromBody] CategoriaDto categoriaDto)
         {
@@ -165,10 +175,12 @@ namespace ApiPeliculas.Controllers
         /// </summary>
         /// <param name="categoriaId">id de la categoria</param>
         /// <returns></returns>
+        [Authorize(Roles ="admin")]
         [HttpDelete("{categoriaId:int}", Name = "DeleteCategoria")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
         public IActionResult DeleteCategoria(int categoriaId)
