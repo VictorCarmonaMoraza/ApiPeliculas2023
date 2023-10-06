@@ -17,6 +17,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
     opciones.UseSqlServer(builder.Configuration.GetConnectionString("ConexionSql"));
 });
 
+//Añadimos Cache
+builder.Services.AddResponseCaching();
+
 //Agregamos los repositorios
 builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
 builder.Services.AddScoped<IPeliculaRepositorio, PeliculaRepositorio>();
