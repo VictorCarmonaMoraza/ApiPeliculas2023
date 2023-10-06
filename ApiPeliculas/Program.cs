@@ -27,6 +27,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+//Soporte para CORS
+//Se puede habilitar: 1-Un domino, 2-multiples dominios,
+//3-cualquier dominio(Tener en cuenta seguridad)
+//Usamos de ejmplo el dominio:http://localhost:3223, se debe cambiar por el correcto
+//Se usa (*) para todos los dominios
+builder.Services.AddCors(p => p.AddPolicy("PolicyCors", build =>
+{
+    //build.WithOrigins("http://localhost:3223").AllowAnyMethod().AllowAnyHeader();
+    build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,6 +49,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+//Soporte para CORS
+app.UseCors("PolicyCors");
 
 app.UseAuthorization();
 
