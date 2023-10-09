@@ -3,6 +3,8 @@ using ApiPeliculas.DTOS.UsuarioDTO;
 using ApiPeliculas.Helpers;
 using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -18,15 +20,22 @@ namespace ApiPeliculas.Repositorio
 
         private readonly ApplicationDbContext _bd;
         private string claveSecreta;
+        private readonly UserManager<AppUsuario> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="bd"></param>
-        public UsuarioRepositorio(ApplicationDbContext bd, IConfiguration config)
+        public UsuarioRepositorio(ApplicationDbContext bd, IConfiguration config,
+            UserManager<AppUsuario> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             _bd = bd;
             claveSecreta = config.GetValue<string>("ApiSettings:Secreta");
+            _roleManager = roleManager;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -35,19 +44,19 @@ namespace ApiPeliculas.Repositorio
         /// <param name="usuarioId">id del usaurio</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Usuario GetUsuario(int usuarioId)
+        public AppUsuario GetUsuario(string usuarioId)
         {
-            return _bd.Usuarios.FirstOrDefault(u=>u.Id == usuarioId);
+            return _bd.AppUsuario.FirstOrDefault(u=>u.Id == usuarioId);
         }
 
         /// <summary>
         /// Obtenemos lista de usaurios de la base de datos ordenados por el nombre
         /// </summary>
         /// <returns></returns>
-        public ICollection<Usuario> GetUsuarios()
+        public ICollection<AppUsuario> GetUsuarios()
         {
             //Retornamos el nombre de usaurios ordenados por su nombre
-            return _bd.Usuarios.OrderBy(u => u.Nombre).ToList();
+            return _bd.AppUsuario.OrderBy(u => u.UserName).ToList();
         }
 
         /// <summary>
@@ -57,7 +66,7 @@ namespace ApiPeliculas.Repositorio
         /// <returns></returns>
         public bool IsUniqueUser(string usuario)
         {
-            var usuariobd = _bd.Usuarios.FirstOrDefault(u=>u.NombreUsuario == usuario);
+            var usuariobd = _bd.AppUsuario.FirstOrDefault(u=>u.UserName == usuario);
 
             //Comporbamos si el usaurio de la base de datos es igual a null
             if (usuariobd == null)
@@ -98,15 +107,16 @@ namespace ApiPeliculas.Repositorio
         /// <returns></returns>
         public async Task<UsuarioLoginRespuestaDto> Login(UsuarioLoginDto usuarioLoginDto)
         {
-            var passwordEncriptado = EncriptarPassword.obtenermd5(usuarioLoginDto.Password);
+            //var passwordEncriptado = EncriptarPassword.obtenermd5(usuarioLoginDto.Password);
 
             //Validamos soi el usuario no existe xcon la combinacion de usuario y contraseña correcta
-            var usuario = _bd.Usuarios.FirstOrDefault(
-                u=>u.NombreUsuario.ToLower() == usuarioLoginDto.NombreUsuario.ToLower()
-                && u.Password==passwordEncriptado);
-
+            var usuario = _bd.AppUsuario.FirstOrDefault(
+                u=>u.UserName.ToLower() == usuarioLoginDto.NombreUsuario.ToLower()
+                //&& u.Password==passwordEncriptado
+                );
+            bool isValida = await _userManager.CheckPasswordAsync(usuario, usuarioLoginDto.Password);
             //validamos si el usaurio es nulo
-            if(usuario == null)
+            if(usuario == null || isValida == false)
             {
                 return new UsuarioLoginRespuestaDto()
                 {
@@ -116,6 +126,8 @@ namespace ApiPeliculas.Repositorio
             }
 
             //Aqui existe el usaurio entonces podemos procesar el login
+            var  roles = await _userManager.GetRolesAsync(usuario);
+
             var manejadorToken = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(claveSecreta);
 
@@ -123,8 +135,8 @@ namespace ApiPeliculas.Repositorio
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, usuario.NombreUsuario.ToString()),
-                    new Claim(ClaimTypes.Role, usuario.Role)
+                    new Claim(ClaimTypes.Name, usuario.UserName.ToString()),
+                    new Claim(ClaimTypes.Role, roles.FirstOrDefault())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -135,8 +147,9 @@ namespace ApiPeliculas.Repositorio
             UsuarioLoginRespuestaDto usuarioLoginRespuestaDto = new UsuarioLoginRespuestaDto()
             {
                 Token = manejadorToken.WriteToken(token),
-                Usuario = usuario
+                Usuario = _mapper.Map<UsuarioDatosDto>(usuario)
             };
+
             return usuarioLoginRespuestaDto;
         }
     }

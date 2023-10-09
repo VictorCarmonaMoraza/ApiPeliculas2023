@@ -12,14 +12,14 @@ namespace ApiPeliculas.Repositorio.IRepositorio
         /// Obtiene coleccion de Usaurios
         /// </summary>
         /// <returns></returns>
-        ICollection<Usuario> GetUsuarios();
+        ICollection<AppUsuario> GetUsuarios();
 
         /// <summary>
         /// Obytiene el usuario por su id
         /// </summary>
         /// <param name="usuarioId"></param>
         /// <returns></returns>
-        Usuario GetUsuario(int usuarioId);
+        AppUsuario GetUsuario(string usuarioId);
 
         /// <summary>
         /// Comporbamos si el usuario es unico
@@ -35,6 +35,7 @@ namespace ApiPeliculas.Repositorio.IRepositorio
         /// </summary>
         /// <param name="usuarioRegistroDto">usuario a registrar</param>
         /// <returns></returns>
-        Task<Usuario> Registro(UsuarioRegistroDto usuarioRegistroDto);
+        //Task<Usuario> Registro(UsuarioRegistroDto usuarioRegistroDto);
+        Task<UsuarioDatosDto> Registro(UsuarioRegistroDto usuarioRegistroDto);
     }
 }
