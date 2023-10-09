@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace ApiPeliculas.Controllers
 {
 
-    [Route("api/peliculas")]
+    [Route("api/Peliculas")]
     [ApiController]
     public class PeliculasController : ControllerBase
     {

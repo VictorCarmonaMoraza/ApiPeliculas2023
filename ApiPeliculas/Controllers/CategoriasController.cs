@@ -11,7 +11,7 @@ namespace ApiPeliculas.Controllers
     [ApiController]
     //Opcion 1 => [Route("api/[controller]")]
     //Opcion 2 =>[Route("api/categoria")] =>esta es mejor porque si cambia el nombre del controlador seguira funcionando
-    [Route("api/categoria")]
+    [Route("api/Categorias")]
     public class CategoriasController : ControllerBase
     {
 
@@ -33,18 +33,19 @@ namespace ApiPeliculas.Controllers
         [AllowAnonymous]
         [HttpGet]
         //[ResponseCache(Duration =20)]
-        [ResponseCache(Location =ResponseCacheLocation.None, NoStore =true)]
+        //[ResponseCache(Location =ResponseCacheLocation.None, NoStore =true)]
+        [ResponseCache(CacheProfileName = "PorDefecto20Segundos")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetCategorias()
         {
             //Forma 1
             IEnumerable<Categoria> listaCategorias = _ctRepo.GetCategorias().ToList();
-            //Forma 2
-            var listaCategorias2 = _ctRepo.GetCategorias().ToList();
+            ////Forma 2
+            //var listaCategorias2 = _ctRepo.GetCategorias().ToList();
 
-            //Forma 3
-            var listaCategorias3 = from pelicula in _ctRepo.GetCategorias() select pelicula;
+            ////Forma 3
+            //var listaCategorias3 = from pelicula in _ctRepo.GetCategorias() select pelicula;
 
             //
             var listaCategoriaDto = new List<CategoriaDto>();
@@ -63,7 +64,8 @@ namespace ApiPeliculas.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpGet("{categoriaId:int}", Name = "GetCategoria")]
-        [ResponseCache(Duration = 30)]
+        //[ResponseCache(Duration = 30)]
+        [ResponseCache(CacheProfileName = "PorDefecto20Segundos")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

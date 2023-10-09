@@ -9,7 +9,7 @@ using System.Net;
 
 namespace ApiPeliculas.Controllers
 {
-    [Route("api/usuarios")]
+    [Route("api/Usuarios")]
     [ApiController]
     public class UsuariosController : Controller
     {
