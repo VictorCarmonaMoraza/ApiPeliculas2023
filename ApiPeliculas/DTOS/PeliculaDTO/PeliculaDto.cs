@@ -9,7 +9,7 @@ namespace ApiPeliculas.DTOS.PeliculaDTO
 
         [Required(ErrorMessage = "El nombre de la pelicula es obligatorio")]
         public string Nombre { get; set; }
-        public string RutaImagen { get; set; }
+        public byte[] RutaImagen { get; set; }
 
         [Required(ErrorMessage = "La descripcion es obligatoria")]
         public string Descripcion { get; set; }
