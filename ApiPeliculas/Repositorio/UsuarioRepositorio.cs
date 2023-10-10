@@ -81,23 +81,51 @@ namespace ApiPeliculas.Repositorio
         /// </summary>
         /// <param name="usuarioRegistroDto"></param>
         /// <returns></returns>
-        public async Task<Usuario> Registro(UsuarioRegistroDto usuarioRegistroDto)
+        public async Task<UsuarioDatosDto> Registro(UsuarioRegistroDto usuarioRegistroDto)
         {
-            var passwwordEncriptada = EncriptarPassword.obtenermd5(usuarioRegistroDto.Password);
+            //var passwwordEncriptada = EncriptarPassword.obtenermd5(usuarioRegistroDto.Password);
 
-            Usuario usuario = new Usuario()
+            AppUsuario usuario = new AppUsuario()
             {
-                NombreUsuario = usuarioRegistroDto.NombreUsuario,
-                Password = passwwordEncriptada,
+                UserName = usuarioRegistroDto.NombreUsuario,
+                //Password = passwwordEncriptada,
+                Email = usuarioRegistroDto.NombreUsuario,
+                NormalizedEmail = usuarioRegistroDto.NombreUsuario.ToUpper(),
                 Nombre = usuarioRegistroDto.Nombre,
-                Role = usuarioRegistroDto.Role,
             };
 
+            var result = await _userManager.CreateAsync(usuario, usuarioRegistroDto.Password);
+
+            if(result.Succeeded)
+            {
+                //Si no existe Role. Solo la primera vez y es para crear los roles
+                if(!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("admin"));
+                    await _roleManager.CreateAsync(new IdentityRole("registrado"));
+                }
+
+                //await _userManager.AddToRoleAsync(usuario, "admin");
+                await _userManager.AddToRoleAsync(usuario, "registrado");
+                var usuarioRetornado = _bd.AppUsuario.FirstOrDefault(u => u.UserName == usuarioRegistroDto.NombreUsuario);
+
+                //Opcion 1 
+                //return new UsuarioDatosDto()
+                //{
+                //    Id = usuarioRetornado.Id,
+                //    UserName = usuarioRetornado.UserName,
+                //    Nombre = usuarioRetornado.Nombre,
+                //};
+
+                //Opcion 2
+                return _mapper.Map<UsuarioDatosDto>(usuarioRetornado);
+            }
             //Guardado en BBDD
-            _bd.Usuarios.Add(usuario);
-            await _bd.SaveChangesAsync();
-            usuario.Password = passwwordEncriptada;
-            return usuario;
+            //_bd.Usuarios.Add(usuario);
+            //await _bd.SaveChangesAsync();
+            //usuario.Password = passwwordEncriptada;
+            //return usuario;
+            return new UsuarioDatosDto();
         }
 
         /// <summary>
